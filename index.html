@@ -1,0 +1,414 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>The Flying Alarm Clock - Interactive Quiz</title>  
+    <style>  
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');  
+  
+        :root {  
+            --primary: #6C5CE7;  
+            --secondary: #00CEC9;  
+            --bg-color: #F8F9FA;  
+            --text-color: #2D3436;  
+            --card-bg: #FFFFFF;  
+        }  
+  
+        * {  
+            box-sizing: border-box;  
+            font-family: 'Poppins', sans-serif;  
+        }  
+  
+        body {  
+            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);  
+            color: var(--text-color);  
+            display: flex;  
+            justify-content: center;  
+            align-items: center;  
+            min-height: 100vh;  
+            margin: 0;  
+            padding: 20px;  
+        }  
+  
+        .container {  
+            background-color: var(--card-bg);  
+            width: 100%;  
+            max-width: 600px;  
+            border-radius: 20px;  
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);  
+            padding: 40px 30px;  
+            text-align: center;  
+            position: relative;  
+            overflow: hidden;  
+        }  
+  
+        .header {  
+            margin-bottom: 30px;  
+        }  
+  
+        h1 {  
+            color: var(--primary);  
+            font-size: 1.8rem;  
+            margin-bottom: 5px;  
+        }  
+  
+        p.subtitle {  
+            color: #636E72;  
+            font-size: 0.9rem;  
+        }  
+  
+        /* Quiz Styles */  
+        .question-container {  
+            display: none;  
+            animation: fadeIn 0.5s ease;  
+        }  
+  
+        .question-container.active {  
+            display: block;  
+        }  
+  
+        .question {  
+            font-size: 1.2rem;  
+            font-weight: 600;  
+            margin-bottom: 20px;  
+        }  
+  
+        .options {  
+            display: flex;  
+            flex-direction: column;  
+            gap: 15px;  
+        }  
+  
+        .option-btn {  
+            background-color: #F1F2F6;  
+            border: 2px solid transparent;  
+            border-radius: 12px;  
+            padding: 15px;  
+            font-size: 1rem;  
+            cursor: pointer;  
+            transition: all 0.3s ease;  
+            text-align: left;  
+            font-weight: 500;  
+        }  
+  
+        .option-btn:hover {  
+            background-color: #DFE4EA;  
+            border-color: var(--primary);  
+        }  
+  
+        .option-btn.selected {  
+            background-color: var(--primary);  
+            color: white;  
+            border-color: var(--primary);  
+        }  
+  
+        .next-btn {  
+            background: var(--secondary);  
+            color: white;  
+            border: none;  
+            border-radius: 12px;  
+            padding: 15px 30px;  
+            font-size: 1.1rem;  
+            font-weight: 600;  
+            margin-top: 25px;  
+            cursor: pointer;  
+            box-shadow: 0 5px 15px rgba(0, 206, 201, 0.4);  
+            transition: transform 0.2s;  
+            display: none;  
+            width: 100%;  
+        }  
+  
+        .next-btn:active {  
+            transform: scale(0.95);  
+        }  
+  
+        /* Result & Certificate Form */  
+        #result-screen {  
+            display: none;  
+        }  
+  
+        .score-circle {  
+            width: 120px;  
+            height: 120px;  
+            border-radius: 50%;  
+            background: linear-gradient(135deg, var(--primary), var(--secondary));  
+            color: white;  
+            display: flex;  
+            justify-content: center;  
+            align-items: center;  
+            font-size: 2rem;  
+            font-weight: 800;  
+            margin: 0 auto 20px;  
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);  
+        }  
+  
+        input[type="text"] {  
+            width: 100%;  
+            padding: 15px;  
+            border: 2px solid #DFE4EA;  
+            border-radius: 12px;  
+            font-size: 1rem;  
+            margin-bottom: 20px;  
+            outline: none;  
+            text-align: center;  
+        }  
+  
+        input[type="text"]:focus {  
+            border-color: var(--primary);  
+        }  
+  
+        /* Certificate Styles */  
+        #certificate {  
+            display: none;  
+            background: white;  
+            border: 10px solid #F1F2F6;  
+            border-radius: 20px;  
+            padding: 40px;  
+            text-align: center;  
+            position: relative;  
+        }  
+  
+        .cert-border {  
+            border: 2px solid var(--primary);  
+            border-radius: 10px;  
+            padding: 30px;  
+        }  
+  
+        .cert-title {  
+            color: var(--primary);  
+            font-size: 2.2rem;  
+            font-weight: 800;  
+            margin-bottom: 10px;  
+            text-transform: uppercase;  
+        }  
+  
+        .cert-student {  
+            font-size: 1.8rem;  
+            font-weight: 600;  
+            color: var(--text-color);  
+            margin: 20px 0;  
+            border-bottom: 2px dashed var(--secondary);  
+            display: inline-block;  
+            padding-bottom: 5px;  
+            min-width: 250px;  
+        }  
+  
+        .cert-footer {  
+            margin-top: 40px;  
+            display: flex;  
+            justify-content: space-between;  
+            font-size: 0.9rem;  
+            color: #636E72;  
+            text-align: left;  
+        }  
+  
+        .cert-footer-right {  
+            text-align: right;  
+        }  
+  
+        .print-btn {  
+            background: var(--primary);  
+            color: white;  
+            border: none;  
+            border-radius: 12px;  
+            padding: 12px 25px;  
+            font-size: 1rem;  
+            font-weight: 600;  
+            margin-top: 20px;  
+            cursor: pointer;  
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);  
+        }  
+  
+        @keyframes fadeIn {  
+            from { opacity: 0; transform: translateY(10px); }  
+            to { opacity: 1; transform: translateY(0); }  
+        }  
+  
+        /* Print Specific Rules */  
+        @media print {  
+            body {  
+                background: white;  
+                margin: 0;  
+                padding: 0;  
+            }  
+            .container, .print-btn {  
+                display: none !important;  
+            }  
+            #certificate {  
+                display: block !important;  
+                border: none;  
+                width: 100%;  
+                height: 100vh;  
+                padding: 0;  
+            }  
+            .cert-border {  
+                border: 15px solid var(--primary);  
+                padding: 50px;  
+                height: 90vh;  
+                display: flex;  
+                flex-direction: column;  
+                justify-content: center;  
+            }  
+        }  
+    </style>  
+</head>  
+<body>  
+  
+    <div class="container" id="app-container">  
+        <div class="header" id="quiz-header">  
+            <h1>Unit 8: The Flying Alarm Clock</h1>  
+            <p class="subtitle">Interactive Quiz | Prepared by Tr. Mohammed AlFaifi</p>  
+        </div>  
+  
+        <!-- Quiz Screen -->  
+        <div id="quiz-screen">  
+            <!-- Question 1 -->  
+            <div class="question-container active" data-q="1">  
+                <div class="question">1. What does the expression "What are you up to?" mean?</div>  
+                <div class="options">  
+                    <button class="option-btn" data-val="0">Where are you going?</button>  
+                    <button class="option-btn" data-val="1">What are you doing now?</button>  
+                    <button class="option-btn" data-val="0">How old are you?</button>  
+                </div>  
+            </div>  
+  
+            <!-- Question 2 -->  
+            <div class="question-container" data-q="2">  
+                <div class="question">2. The expression "What on earth..?" shows:</div>  
+                <div class="options">  
+                    <button class="option-btn" data-val="0">Happiness</button>  
+                    <button class="option-btn" data-val="0">Sadness</button>  
+                    <button class="option-btn" data-val="1">Surprise</button>  
+                </div>  
+            </div>  
+  
+            <!-- Question 3 -->  
+            <div class="question-container" data-q="3">  
+                <div class="question">3. What does the top part of the new alarm clock do?</div>  
+                <div class="options">  
+                    <button class="option-btn" data-val="1">It flies</button>  
+                    <button class="option-btn" data-val="0">It sings</button>  
+                    <button class="option-btn" data-val="0">It dances</button>  
+                </div>  
+            </div>  
+  
+            <!-- Question 4 -->  
+            <div class="question-container" data-q="4">  
+                <div class="question">4. You have to ____ the flying part and put it back to stop the alarm.</div>  
+                <div class="options">  
+                    <button class="option-btn" data-val="0">Break it</button>  
+                    <button class="option-btn" data-val="1">Catch it</button>  
+                    <button class="option-btn" data-val="0">Throw it</button>  
+                </div>  
+            </div>  
+  
+            <button class="next-btn" id="next-btn">Next Question ➔</button>  
+        </div>  
+  
+        <!-- Result Screen -->  
+        <div id="result-screen">  
+            <h2>Awesome Job!</h2>  
+            <div class="score-circle">  
+                <span id="final-score">0/4</span>  
+            </div>  
+            <p>Enter your full name to get your certificate:</p>  
+            <input type="text" id="student-name" placeholder="Your Full Name (e.g. Ali Ahmed)">  
+            <button class="next-btn" id="generate-btn" style="display: block;">Get Certificate 🏆</button>  
+        </div>  
+    </div>  
+  
+    <!-- Printable Certificate -->  
+    <div id="certificate">  
+        <div class="cert-border">  
+            <div class="cert-title">Certificate of Achievement</div>  
+            <p style="font-size: 1.2rem; color: #636E72; margin-top: 20px;">This certificate is proudly presented to</p>  
+            <div class="cert-student" id="cert-name-display">Student Name</div>  
+            <p style="font-size: 1.1rem; color: #2D3436;">For successfully completing the interactive lesson:</p>  
+            <h3 style="color: var(--secondary); font-size: 1.5rem;">Unit 8: The Flying Alarm Clock</h3>  
+            <p>Score: <strong id="cert-score-display">0/4</strong></p>  
+              
+            <div class="cert-footer">  
+                <div>  
+                    <strong>Prepared by:</strong><br>  
+                    Teacher: Mohammed AlFaifi<br>  
+                    English Department  
+                </div>  
+                <div class="cert-footer-right">  
+                    <strong>School:</strong><br>  
+                    Ashawajrah Intermediate School<br>  
+                    <span id="cert-date"></span>  
+                </div>  
+            </div>  
+        </div>  
+        <button class="print-btn" onclick="window.print()">🖨️ Print Certificate</button>  
+    </div>  
+  
+    <script>  
+        let currentQuestionIndex = 0;  
+        let score = 0;  
+        const questions = document.querySelectorAll('.question-container');  
+        const nextBtn = document.getElementById('next-btn');  
+        let selectedValue = null;  
+  
+        // Add click events to options  
+        document.querySelectorAll('.option-btn').forEach(btn => {  
+            btn.addEventListener('click', function() {  
+                // Remove selection from siblings  
+                let siblings = this.parentNode.children;  
+                for (let sibling of siblings) {  
+                    sibling.classList.remove('selected');  
+                }  
+                this.classList.add('selected');  
+                selectedValue = parseInt(this.getAttribute('data-val'));  
+                nextBtn.style.display = 'block';  
+            });  
+        });  
+  
+        // Next button logic  
+        nextBtn.addEventListener('click', () => {  
+            if (selectedValue === 1) {  
+                score++;  
+            }  
+              
+            questions[currentQuestionIndex].classList.remove('active');  
+            currentQuestionIndex++;  
+            selectedValue = null;  
+            nextBtn.style.display = 'none';  
+  
+            if (currentQuestionIndex < questions.length) {  
+                questions[currentQuestionIndex].classList.add('active');  
+            } else {  
+                showResults();  
+            }  
+        });  
+  
+        function showResults() {  
+            document.getElementById('quiz-screen').style.display = 'none';  
+            document.getElementById('quiz-header').style.display = 'none';  
+            document.getElementById('result-screen').style.display = 'block';  
+            document.getElementById('final-score').innerText = score + '/' + questions.length;  
+        }  
+  
+        // Generate Certificate Logic  
+        document.getElementById('generate-btn').addEventListener('click', () => {  
+            const nameInput = document.getElementById('student-name').value;  
+            if (nameInput.trim() === '') {  
+                alert('Please enter your name first!');  
+                return;  
+            }  
+  
+            document.getElementById('app-container').style.display = 'none';  
+            document.getElementById('certificate').style.display = 'block';  
+              
+            document.getElementById('cert-name-display').innerText = nameInput;  
+            document.getElementById('cert-score-display').innerText = score + '/' + questions.length;  
+              
+            // Set today's date  
+            const today = new Date();  
+            const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });  
+            document.getElementById('cert-date').innerText = 'Date: ' + dateStr;  
+        });  
+    </script>  
+</body>  
+</html>  
